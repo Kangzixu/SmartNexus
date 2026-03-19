@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>数据统计与分析 - SmartNexus - 智慧网络导航系统</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- CSS 文件 -->
+    <link rel="stylesheet" href="statistics.css">
+    <!-- ECharts 库 -->
+    <script src="echarts.js"></script>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <button class="btn-back" onclick="window.location.href='index.html'">返回首页</button>
+            <h1>数据统计与分析</h1>
+            <div class="header-actions">
+                <button class="btn-refresh" onclick="loadStatisticsData()">刷新数据</button>
+            </div>
+        </div>
+        
+        <div class="content">
+            <div id="loadingIndicator" class="loading" style="text-align: center; padding: 40px;">
+                正在加载统计数据...
+            </div>
+            
+            <div id="statisticsContent" style="display: none;">
+                <!-- 第一行：用户统计和搜索与访问行为对比 -->
+                <div class="stats-row">
+                    <div class="stat-card half-width">
+                        <h3>👥 用户统计</h3>
+                        <div id="userChart" style="width: 100%; height: 300px;"></div>
+                    </div>
+                    <div class="stat-card half-width">
+                        <h3>📊 搜索与访问行为对比</h3>
+                        <div id="behaviorChart" style="width: 100%; height: 300px;"></div>
+                    </div>
+                </div>
+                
+                <!-- 搜索统计 -->
+                <div class="stat-card">
+                    <h3>🔍 热门搜索关键词 Top 10</h3>
+                    <div id="searchChart" style="width: 100%; height: 400px;"></div>
+                </div>
+                
+                <!-- 网站访问排行 -->
+                <div class="stats-row">
+                    <div class="stat-card half-width">
+                        <h3>🌐 官方网站访问排行 Top 10</h3>
+                        <div id="officialUrlChart" style="width: 100%; height: 400px;"></div>
+                    </div>
+                    <div class="stat-card half-width">
+                        <h3>🔗 入口网站访问排行 Top 10</h3>
+                        <div id="entryUrlChart" style="width: 100%; height: 400px;"></div>
+                    </div>
+                </div>
+                
+                <!-- 用户活跃度趋势 -->
+                <div class="stat-card">
+                    <h3>📈 用户活跃度趋势（最近30天）</h3>
+                    <div id="activityTrendChart" style="width: 100%; height: 400px;"></div>
+                </div>
+                
+                <!-- 最受欢迎的建筑类型 -->
+                <div class="stat-card">
+                    <h3>🏗️ 最受欢迎的建筑类型（基于访问量）</h3>
+                    <div id="buildingTypeChart" style="width: 100%; height: 400px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- JavaScript 文件 -->
+    <script src="statistics.js"></script>
+    
+    <footer>
+        <p>&copy; 2025 SmartNexus - 智慧网络导航系统 | 徐子康团队版权所有</p>
+    </footer>
+</body>
+</html>
+
+
+
+

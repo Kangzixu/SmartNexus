@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartNexus - 智慧网络导航系统</title>
+    <!-- ECharts 库 -->
+    <script src="echarts.js"></script>
+    <!-- CSS 文件 -->
+    <link rel="stylesheet" href="index.css">
+</head>
+<body>
+    <!-- 左侧边栏（固定在屏幕左侧） -->
+    <div class="sidebar-container">
+        <div class="sidebar">
+            <div class="sidebar-content">
+                <h2 style="margin: 0; padding: 0; font-size: 0.9em; font-weight: bold; color: white; margin-bottom: 5px; text-align: center;">SmartNexus</h2>
+                <h3>智慧网络导航系统</h3>
+                
+                <!-- 管理员登录按钮（未登录时显示） -->
+                <div class="sidebar-section">
+                    <button class="sidebar-btn" id="loginBtn" onclick="openLoginModal()">
+                        <span>🔐</span>
+                        <span>登录</span>
+                    </button>
+                </div>
+                
+                <!-- 导航菜单（仅登录后显示） -->
+                <div class="sidebar-section" id="navMenuSection" style="display: none;">
+                    <div class="user-dropdown-container" style="position: relative; margin-bottom: 10px;">
+                        <button id="userNameBtn" class="user-name-btn" onclick="toggleUserDropdown()" style="display: none; width: 100%; padding: 10px; background: #f5f6fa; border: none; border-radius: 6px; text-align: center; font-weight: bold; color: #333; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;">
+                            <span>👤</span>
+                            <span id="userNameText"></span>
+                            <span style="font-size: 12px;">▼</span>
+                        </button>
+                        <div id="userDropdown" class="user-dropdown" style="display: none; position: absolute; top: 100%; left: 0; right: 0; margin-top: 5px; background: white; border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 1000; overflow: hidden;">
+                            <button class="user-dropdown-item" onclick="logout(); closeUserDropdown();" style="width: 100%; padding: 12px; border: none; background: white; text-align: left; cursor: pointer; font-size: 14px; color: #333; transition: background 0.2s;">
+                                <span>🚪</span>
+                                <span style="margin-left: 8px;">退出登录</span>
+                            </button>
+                        </div>
+                    </div>
+                    </div>
+                
+                <!-- 页面切换按钮（仅管理员可见） -->
+                <div class="sidebar-section" id="pageToggleSection" style="display: none;">
+                    <button id="pageToggleBtn" class="sidebar-toggle-btn" onclick="togglePage()">
+                        <span id="pageToggleText">切换到管理员页面</span>
+                    </button>
+                </div>
+                
+                <!-- 普通用户侧边栏 -->
+                <div class="sidebar-section" id="userSidebarSection">
+                    <button class="sidebar-btn sidebar-selector" data-page="home" onclick="switchToPage('home')">
+                        <span>🏠</span>
+                        <span>首页</span>
+                    </button>
+                    <button class="sidebar-btn sidebar-selector" data-page="myConcern" id="myConcernBtn" onclick="switchToPage('myConcern')" style="display: none;">
+                        <span>❤️</span>
+                        <span>我的关心</span>
+                    </button>
+                    <button class="sidebar-btn sidebar-selector" data-page="bookmark" id="bookmarkBtn" onclick="switchToPage('bookmark')" style="display: none;">
+                        <span>⭐</span>
+                        <span>云收藏夹</span>
+                    </button>
+                    <button class="sidebar-btn sidebar-selector" data-page="userHistory" id="userHistoryBtn" onclick="switchToPage('userHistory')" style="display: none;">
+                        <span>📜</span>
+                        <span>访问历史</span>
+                    </button>
+                    <button class="sidebar-btn sidebar-selector" data-page="announcements" onclick="switchToPage('announcements')">
+                        <span>📢</span>
+                        <span>查看公告</span>
+                    </button>
+                    <button class="sidebar-btn sidebar-selector" data-page="feedback" onclick="switchToPage('feedback')">
+                        <span>🛠️</span>
+                        <span>反馈问题</span>
+                    </button>
+                </div>
+                
+                <!-- 管理员侧边栏 -->
+                <div class="sidebar-section" id="adminSidebarSection" style="display: none;">
+                    <button class="sidebar-btn sidebar-selector" data-page="admin" onclick="switchToPage('admin')">
+                        <span>⚙️</span>
+                        <span>数据管理</span>
+                    </button>
+                    <button class="sidebar-btn sidebar-selector" data-page="statistics" onclick="switchToPage('statistics')">
+                        <span>📊</span>
+                        <span>数据统计</span>
+                    </button>
+                    <button class="sidebar-btn sidebar-selector" data-page="createAnnouncement" onclick="switchToPage('createAnnouncement')">
+                        <span>📝</span>
+                        <span>新建公告</span>
+                    </button>
+                    <button class="sidebar-btn sidebar-selector" data-page="viewFeedback" onclick="switchToPage('viewFeedback')">
+                        <span>📋</span>
+                        <span>查看反馈</span>
+                    </button>
+                </div>
+                
+                <!-- 刷新按钮（仅首页显示） -->
+                <div class="sidebar-section" id="refreshSection">
+                    <button class="sidebar-btn" onclick="handleRefresh()">
+                        <span>🔄</span>
+                        <span>刷新数据</span>
+                    </button>
+                </div>
+            </div>
+            
+            <!-- 隐私政策按钮（固定在底部） -->
+            <div class="sidebar-section" id="privacySection">
+                <button class="sidebar-privacy-btn" onclick="showPrivacyPolicy()" title="隐私保护">
+                    <span>隐私保护</span>
+                </button>
+            </div>
+            
+        </div>
+    </div>
+    
+    <div class="container">
+        <!-- Header 已移除，所有功能移到左侧边栏 -->
+
+        <!-- 首页信息页 -->
+        <div class="page-section active" id="homePage">
+        <div class="content">
+                <!-- 主内容区 -->
+                <div class="main-content-area">
+                <!-- 搜索框（移到右侧信息区顶部） -->
+                <div class="main-search-section">
+                    <div class="main-search-box">
+                        <h2>主网站搜索</h2>
+                        <div class="search-input-wrapper">
+                            <input type="text" id="searchInput" class="main-search-input" placeholder="输入主网站名称或描述搜索" />
+                            <button class="search-clear-btn" id="searchClearBtn" onclick="clearSearchInput()" style="display: none;">✕</button>
+                        </div>
+                        <div class="search-buttons-wrapper">
+                            <button class="main-search-btn" onclick="searchMainWebsite()">搜索</button>
+                            <div class="parallel-search-wrapper" id="parallelSearchWrapper" style="display: none;">
+                                <button class="parallel-search-btn" id="parallelSearchBtn" onclick="toggleSearchEngineMenu()">并行搜索</button>
+                                <div class="search-engine-menu" id="searchEngineMenu" style="display: none;">
+                                    <div class="search-engine-option" onclick="selectSearchEngine('bing')">
+                                        <span class="engine-icon">🔍</span>
+                                        <span>Bing</span>
+                                        <span class="engine-check" id="check-bing">✓</span>
+                                    </div>
+                                    <div class="search-engine-option" onclick="selectSearchEngine('google')">
+                                        <span class="engine-icon">🔍</span>
+                                        <span>Google</span>
+                                        <span class="engine-check" id="check-google" style="display: none;">✓</span>
+                                    </div>
+                                    <div class="search-engine-option" onclick="selectSearchEngine('baidu')">
+                                        <span class="engine-icon">🔍</span>
+                                        <span>百度</span>
+                                        <span class="engine-check" id="check-baidu" style="display: none;">✓</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="searchResult" class="search-result" style="display: none;"></div>
+                </div>
+                
+            <!-- 统计卡片和推荐榜 -->
+            <div class="stats-section">
+                <div class="stats-layout">
+                    <!-- 左侧：合并的统计卡片和图表 -->
+                    <div class="stats-cards-merged">
+                        <div class="stat-card-merged">
+                            <div class="stat-item">
+                        <h3>总主网站数</h3>
+                        <div class="value" id="totalCount">-</div>
+                    </div>
+                            <div class="stat-item">
+                        <h3>运行中主网站</h3>
+                        <div class="value" id="runningCount">-</div>
+                    </div>
+                            <div class="stat-item">
+                        <h3>主网站类型数</h3>
+                        <div class="value" id="typeCount">-</div>
+                    </div>
+                </div>
+                <!-- 图表容器 -->
+                        <div class="charts-container-merged">
+                    <div class="chart-box">
+                        <h3>主网站类型分布</h3>
+                        <div id="typeChart" class="chart"></div>
+                    </div>
+                    <div class="chart-box">
+                        <h3>总主网站数与总入口网站数</h3>
+                        <div id="countChart" class="chart"></div>
+                    </div>
+                        </div>
+                    </div>
+                    
+                    <!-- 右侧：网站热度推荐榜 -->
+                    <div class="top-websites-section">
+                        <div class="top-websites-card">
+                            <h3>🔥 网站热度推荐榜</h3>
+                            <div id="topWebsitesList" class="top-websites-list">
+                                <div class="loading">正在加载推荐榜...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- 主网站列表 -->
+            <div class="main-websites-section" style="width: 100% !important; max-width: 100% !important; min-width: 100% !important; box-sizing: border-box !important; clear: both !important; display: block !important; margin-top: 40px !important; margin-left: 0 !important; margin-right: 0 !important; padding-left: 0 !important; padding-right: 0 !important; position: relative !important; float: none !important;">
+                <div style="display: flex !important; justify-content: space-between !important; align-items: center !important; margin-bottom: 15px; width: 100%; flex-wrap: nowrap;">
+                    <h2 style="margin: 0; flex-shrink: 0;">📋 主网站信息列表</h2>
+                    <div style="display: flex !important; align-items: center !important; gap: 10px; flex-shrink: 0; margin-left: 20px;">
+                        <label for="typeFilter" style="font-weight: bold; color: #555; white-space: nowrap;">筛选类型：</label>
+                        <select id="typeFilter" style="padding: 8px 12px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; cursor: pointer; min-width: 120px;">
+                            <option value="">全部</option>
+                        </select>
+                    </div>
+                </div>
+                <div id="loading" class="loading">正在加载数据...</div>
+                <table class="main-websites-table" id="mainWebsitesTable" style="display: none;">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>主网站名称</th>
+                            <th>类型</th>
+                            <th>描述</th>
+                            <th>官方网站</th>
+                            <th>状态</th>
+                            <th>更多入口</th>
+                            <th>关心</th>
+                        </tr>
+                    </thead>
+                    <tbody id="mainWebsitesTableBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+            </div>
+        </div>
+
+        <!-- 操作记录页面 -->
+        <div class="page-section" id="operationLogPage" style="display: none;">
+            <h2 style="margin-bottom: 20px;">📝 操作记录</h2>
+            <div id="operationLogList" style="max-height: 70vh; overflow-y: auto;">
+                <div class="loading">正在加载操作记录...</div>
+            </div>
+    </div>
+
+        <!-- 公告列表页面 -->
+        <div class="page-section" id="announcementsPage" style="display: none;">
+            <h2 style="margin-bottom: 20px;">📢 公告列表</h2>
+            <div id="announcementsList" style="max-height: 70vh; overflow-y: auto;">
+                <div class="loading">正在加载公告...</div>
+            </div>
+        </div>
+        
+        <!-- 反馈问题页面 -->
+        <div class="page-section" id="feedbackPage" style="display: none;">
+            <div style="max-width: 800px; margin: 0 auto;">
+                <h2 style="margin-bottom: 20px;">🛠️ 反馈问题</h2>
+                <div style="background: white; padding: 25px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                    <div class="form-group">
+                        <label for="feedbackCategory">反馈类别</label>
+                        <select id="feedbackCategory">
+                            <option value="数据错误">数据错误</option>
+                            <option value="功能建议">功能建议</option>
+                            <option value="其他">其他</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="feedbackMessage">反馈内容</label>
+                        <textarea id="feedbackMessage" rows="6" placeholder="请描述问题或建议"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label for="feedbackContact">联系方式（可选）</label>
+                        <input type="text" id="feedbackContact" placeholder="邮箱或电话" />
+                    </div>
+                    <div class="feedback-status" id="feedbackStatus"></div>
+                    <div class="modal-actions" style="margin-top: 20px;">
+                        <button class="btn-cancel" onclick="switchToPage('home')">取消</button>
+                        <button class="btn-submit" onclick="submitFeedback()">提交</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 云收藏夹页面 -->
+        <div class="page-section" id="bookmarkPage" style="display: none;">
+            <div style="max-width: 1000px; margin: 0 auto;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                    <h2 style="margin: 0;">⭐ 云收藏夹</h2>
+                    <button class="btn-add" onclick="openBookmarkModal('add')">添加网址</button>
+                </div>
+                <div id="bookmarkContent" style="max-height: 70vh; overflow-y: auto;">
+                    <div style="text-align: center; padding: 20px;">
+                        <div class="loading">正在加载收藏夹...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 访问历史页面 -->
+        <div class="page-section" id="userHistoryPage" style="display: none; height: calc(100vh - 100px);">
+            <h2 style="margin-bottom: 20px; flex-shrink: 0;">📊 我的访问历史</h2>
+            <div id="userHistoryContent" style="height: calc(100% - 60px); overflow: hidden;">
+                <div style="text-align: center; padding: 20px;">
+                    <div class="loading">正在加载访问历史...</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 我的关心页面 -->
+        <div class="page-section" id="myConcernPage" style="display: none;">
+            <h2 style="margin-bottom: 20px;">❤️ 我的关心</h2>
+            <div id="myConcernContent" style="max-height: 70vh; overflow-y: auto;">
+                <div style="text-align: center; padding: 20px;">
+                    <div class="loading">正在加载我关心的主网站...</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 数据统计页面 -->
+        <div class="page-section" id="statisticsPage" style="display: none;">
+            <div>
+                <div class="header" style="margin-bottom: 20px;">
+                    <h1>数据统计与分析</h1>
+                    <div class="header-actions">
+                        <button class="btn-refresh" onclick="loadStatisticsData()">刷新数据</button>
+                    </div>
+                </div>
+                <div class="content">
+                    <div id="loadingIndicator" class="loading" style="text-align: center; padding: 40px;">
+                        正在加载统计数据...
+                    </div>
+                    <div id="statisticsContent" style="display: none;">
+                        <!-- 第一行：用户统计和搜索与访问行为对比 -->
+                        <div class="stats-row">
+                            <div class="stat-card half-width">
+                                <h3>👥 用户统计</h3>
+                                <div id="userChart" style="width: 100%; height: 300px;"></div>
+                            </div>
+                            <div class="stat-card half-width">
+                                <h3>📊 搜索与访问行为对比</h3>
+                                <div id="behaviorChart" style="width: 100%; height: 300px;"></div>
+                            </div>
+                        </div>
+                        <!-- 搜索统计 -->
+                        <div class="stat-card">
+                            <h3>🔍 热门搜索关键词 Top 10</h3>
+                            <div id="searchChart" style="width: 100%; height: 400px;"></div>
+                        </div>
+                        <!-- 网站访问排行 -->
+                        <div class="stats-row">
+                            <div class="stat-card half-width">
+                                <h3>🌐 官方网站访问排行 Top 10</h3>
+                                <div id="officialUrlChart" style="width: 100%; height: 400px;"></div>
+                            </div>
+                            <div class="stat-card half-width">
+                                <h3>🔗 入口网站访问排行 Top 10</h3>
+                                <div id="entryUrlChart" style="width: 100%; height: 400px;"></div>
+                            </div>
+                        </div>
+                        <!-- 用户活跃度趋势 -->
+                        <div class="stat-card">
+                            <h3>📈 用户活跃度趋势（最近30天）</h3>
+                            <div id="activityTrendChart" style="width: 100%; height: 400px;"></div>
+                        </div>
+                        <!-- 最受欢迎的主网站类型 -->
+                        <div class="stat-card">
+                            <h3>🏗️ 最受欢迎的主网站类型（基于访问量）</h3>
+                            <div id="mainWebsiteTypeChart" style="width: 100%; height: 400px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 新建公告页面 -->
+        <div class="page-section" id="createAnnouncementPage" style="display: none;">
+            <div style="max-width: 800px; margin: 0 auto;">
+                <h2 style="margin-bottom: 20px;">📝 新建公告</h2>
+                <div style="background: white; padding: 25px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                    <div class="form-group">
+                        <label for="createAnnouncementTitle">公告标题</label>
+                        <input type="text" id="createAnnouncementTitle" placeholder="请输入公告标题" />
+                    </div>
+                    <div class="form-group">
+                        <label for="createAnnouncementContent">公告内容</label>
+                        <textarea id="createAnnouncementContent" rows="8" placeholder="请输入公告内容"></textarea>
+                    </div>
+                    <div class="feedback-status" id="createAnnouncementStatus"></div>
+                    <div class="modal-actions" style="margin-top: 20px;">
+                        <button class="btn-cancel" onclick="switchToPage('admin')">取消</button>
+                        <button class="btn-submit" onclick="submitCreateAnnouncement()">发布公告</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 查看反馈页面 -->
+        <div class="page-section" id="viewFeedbackPage" style="display: none;">
+            <div>
+                <h2 style="margin-bottom: 20px;">📋 查看反馈</h2>
+                <div id="viewFeedbackLoading" class="loading" style="text-align: center; padding: 20px;">
+                    正在加载反馈列表...
+                </div>
+                <div id="viewFeedbackEmptyMessage" style="display: none; text-align: center; padding: 40px; color: #999;">
+                    暂无反馈
+                </div>
+                <table id="viewFeedbackTable" style="display: none; width: 100%; border-collapse: collapse; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.1);">
+                    <thead>
+                        <tr style="background: #f5f6fa;">
+                            <th style="padding: 12px; text-align: left; border-bottom: 2px solid #ddd;">ID</th>
+                            <th style="padding: 12px; text-align: left; border-bottom: 2px solid #ddd;">类别</th>
+                            <th style="padding: 12px; text-align: left; border-bottom: 2px solid #ddd;">反馈内容</th>
+                            <th style="padding: 12px; text-align: left; border-bottom: 2px solid #ddd;">联系方式</th>
+                            <th style="padding: 12px; text-align: left; border-bottom: 2px solid #ddd;">提交时间</th>
+                        </tr>
+                    </thead>
+                    <tbody id="viewFeedbackTableBody">
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- 管理员页面 -->
+        <div class="page-section" id="adminPage" style="display: none;">
+            <div>
+                <!-- 管理员页面标签页 -->
+                <div class="admin-tabs" style="display: flex; gap: 10px; margin-bottom: 20px; border-bottom: 2px solid #e0e0e0;">
+                    <button class="admin-tab-btn active" onclick="switchAdminTab('dataManagement')" id="dataManagementTab">
+                        <span>📋</span>
+                        <span>数据管理</span>
+                    </button>
+                    <button class="admin-tab-btn" onclick="switchAdminTab('operationLog')" id="operationLogTab">
+                        <span>📝</span>
+                        <span>操作记录</span>
+                    </button>
+                </div>
+                
+                <!-- 数据管理标签页内容 -->
+                <div id="dataManagementContent" class="admin-tab-content">
+                    <div class="admin-panel">
+                        <h2>主网站搜索</h2>
+                        <div class="admin-search-bar">
+                            <div class="search-input-wrapper">
+                                <input type="text" id="adminSearchInput" placeholder="输入主网站名称实时搜索" />
+                                <button class="search-clear-btn" id="adminSearchClearBtn" onclick="clearAdminSearchInput()" style="display: none;">✕</button>
+                            </div>
+                            <button onclick="filterMainWebsites()">搜索</button>
+                        </div>
+                    </div>
+                
+                <!-- 主网站信息维护弹窗 -->
+                <div id="mainWebsiteModal" class="modal">
+                    <div class="modal-content" style="max-width: 800px;">
+                        <h3 id="mainWebsiteModalTitle">主网站信息维护</h3>
+                        <div class="form-grid" style="max-width: 100%;">
+                            <div>
+                                <label for="formId">ID</label>
+                                <input type="text" id="formId" readonly placeholder="新建主网站时自动生成" />
+                            </div>
+                            <div>
+                                <label for="formName">名称</label>
+                                <input type="text" id="formName" />
+                            </div>
+                            <div>
+                                <label for="formType">类型</label>
+                                <input type="text" id="formType" />
+                            </div>
+                            <div>
+                                <label for="formStatus">状态</label>
+                                <select id="formStatus">
+                                    <option value="运行">运行</option>
+                                    <option value="停用">停用</option>
+                                    <option value="新建">新建</option>
+                                    <option value="规划中">规划中</option>
+                                    <option value="改造中">改造中</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="formWebsite">官方网站</label>
+                                <input type="text" id="formWebsite" />
+                            </div>
+                            <div style="grid-column: 1 / -1;">
+                                <label for="formDescribe">描述</label>
+                                <textarea id="formDescribe" rows="4" placeholder="请输入主网站描述"></textarea>
+                            </div>
+                        </div>
+                        <!-- 网站入口管理区域 -->
+                        <div style="margin-top: 20px; border-top: 2px solid #eee; padding-top: 20px;">
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                                <h4 style="margin: 0; color: #333;">网站入口</h4>
+                                <button type="button" class="btn-add-website" onclick="addWebsiteEntry()" style="padding: 8px 16px; background: #4caf50; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">+ 添加入口</button>
+                            </div>
+                            <div id="websiteEntriesContainer">
+                                <!-- 网站入口输入框将动态添加到这里 -->
+                            </div>
+                        </div>
+                        <div class="status-box" id="adminStatusBox" style="margin-top: 15px;"></div>
+                        <div class="modal-actions">
+                            <button type="button" class="btn-cancel" onclick="closeMainWebsiteModal()">取消</button>
+                            <button type="button" class="btn-submit" id="mainWebsiteModalSubmitBtn" onclick="submitMainWebsiteForm()">提交</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 删除主网站确认弹窗 -->
+                <div id="deleteModal" class="modal">
+                    <div class="modal-content" style="max-width: 500px;">
+                        <h3>确认删除</h3>
+                        <div style="margin-bottom: 20px; font-size: 16px; color: #333;">
+                            <p id="deleteConfirmMessage">确定要删除该主网站吗？</p>
+                        </div>
+                        <div class="modal-actions">
+                            <button type="button" class="btn-delete-confirm-cancel" onclick="closeDeleteModal()">取消</button>
+                            <button type="button" class="btn-delete-confirm-submit" onclick="confirmDelete()">确定</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 新建公告弹窗 -->
+                <div id="announcementModal" class="modal">
+                    <div class="modal-content">
+                        <h3>新建公告</h3>
+                        <div class="form-group">
+                            <label for="announcementTitle">公告标题</label>
+                            <input type="text" id="announcementTitle" placeholder="请输入公告标题" />
+                        </div>
+                        <div class="form-group">
+                            <label for="announcementContent">公告内容</label>
+                            <textarea id="announcementContent" rows="6" placeholder="请输入公告内容"></textarea>
+                        </div>
+                        <div class="feedback-status" id="announcementStatus"></div>
+                        <div class="modal-actions">
+                            <button type="button" class="btn-cancel" onclick="closeAnnouncementModal()">取消</button>
+                            <button type="button" class="btn-submit" onclick="submitAnnouncement()">发布公告</button>
+                        </div>
+                    </div>
+                </div>
+                
+                    <div class="admin-panel">
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                            <h2 style="margin: 0;">主网站列表</h2>
+                            <div style="display: flex; gap: 10px;">
+                                <button class="btn-add" onclick="openMainWebsiteModal('add')">新建主网站</button>
+                            </div>
+                        </div>
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>名称</th>
+                                    <th>类型</th>
+                                    <th>描述</th>
+                                    <th>状态</th>
+                                    <th style="text-align: right; padding-right: 60px;">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminMainWebsitesTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <!-- 操作记录标签页内容 -->
+                <div id="operationLogContent" class="admin-tab-content" style="display: none;">
+                    <div class="admin-panel">
+                        <h2 style="margin-bottom: 20px;">📝 操作记录</h2>
+                        <div id="adminOperationLogList" style="max-height: 70vh; overflow-y: auto;">
+                            <div class="loading">正在加载操作记录...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+    <div id="mainWebsiteEntriesModal" class="modal" style="display: none; z-index: 10000;">
+        <div class="modal-content" style="max-width: 600px;">
+            <h3 id="mainWebsiteEntriesTitle">网站入口</h3>
+            <div id="mainWebsiteEntriesList" style="max-height: 500px; overflow-y: auto;">
+                <div class="loading">正在加载入口信息...</div>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="closeMainWebsiteEntriesModal()">关闭</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 反馈管理弹窗（管理员用） -->
+    <div id="feedbackManagementModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 900px;">
+            <h3>📋 反馈管理</h3>
+            <div style="margin-bottom: 15px;">
+                <button class="btn-refresh" onclick="loadFeedbacks()" style="padding: 8px 16px; background: #2c5aa0; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: bold;">刷新数据</button>
+            </div>
+            <div id="feedbackLoading" class="loading" style="text-align: center; padding: 20px; color: #666;">正在加载反馈数据...</div>
+            <table class="feedback-table" id="feedbackTable" style="display: none; width: 100%; border-collapse: collapse; margin-top: 15px;">
+                <thead>
+                    <tr>
+                        <th style="padding: 12px; border-bottom: 1px solid #eee; text-align: left; background: #f5f6fa; font-weight: bold;">ID</th>
+                        <th style="padding: 12px; border-bottom: 1px solid #eee; text-align: left; background: #f5f6fa; font-weight: bold;">分类</th>
+                        <th style="padding: 12px; border-bottom: 1px solid #eee; text-align: left; background: #f5f6fa; font-weight: bold;">反馈内容</th>
+                        <th style="padding: 12px; border-bottom: 1px solid #eee; text-align: left; background: #f5f6fa; font-weight: bold;">联系方式</th>
+                        <th style="padding: 12px; border-bottom: 1px solid #eee; text-align: left; background: #f5f6fa; font-weight: bold;">提交时间</th>
+                    </tr>
+                </thead>
+                <tbody id="feedbackTableBody">
+                </tbody>
+            </table>
+            <div id="feedbackEmptyMessage" style="display: none; text-align: center; padding: 40px; color: #999;">暂无反馈数据</div>
+            <div class="modal-actions" style="margin-top: 20px;">
+                <button type="button" class="btn-cancel" onclick="closeFeedbackManagementModal()">关闭</button>
+            </div>
+        </div>
+    </div>
+    
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <h3 id="loginModalTitle">登录</h3>
+            <form id="loginForm" onsubmit="event.preventDefault(); handleFormSubmit(event);" style="display: block;">
+                <div class="form-group">
+                    <label for="loginUsername">用户名</label>
+                    <input type="text" id="loginUsername" name="username" autocomplete="username" placeholder="请输入用户名" required />
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">密码</label>
+                    <input type="password" id="loginPassword" name="password" autocomplete="current-password" placeholder="请输入密码" required />
+                </div>
+                <div class="form-group" id="registerPasswordConfirmGroup" style="display: none;">
+                    <label for="registerPasswordConfirm">确认密码</label>
+                    <input type="password" id="registerPasswordConfirm" name="passwordConfirm" autocomplete="new-password" placeholder="请再次输入密码" />
+                </div>
+                <div class="feedback-status" id="loginStatus"></div>
+                <div class="modal-actions">
+                    <button type="button" class="btn-cancel" onclick="closeLoginModal()">取消</button>
+                    <button type="button" id="switchToRegisterBtn" class="btn-cancel" onclick="switchToRegister()" style="display: inline-block;">注册</button>
+                    <button type="button" id="switchToLoginBtn" class="btn-cancel" onclick="switchToLogin()" style="display: none;">返回登录</button>
+                    <button type="submit" id="loginSubmitBtn" class="btn-submit">登录</button>
+                    <button type="button" id="registerSubmitBtn" class="btn-submit" onclick="event.preventDefault(); submitRegister();" style="display: none;">注册</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 云收藏夹弹窗 -->
+    <div id="bookmarkModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 600px;">
+            <h3 id="bookmarkModalTitle">添加网址</h3>
+            <div class="form-group">
+                <label for="bookmarkName">网址名称</label>
+                <input type="text" id="bookmarkName" placeholder="请输入网址名称" />
+            </div>
+            <div class="form-group">
+                <label for="bookmarkUrl">网址</label>
+                <input type="text" id="bookmarkUrl" placeholder="请输入网址（如：https://example.com）" />
+            </div>
+            <div class="feedback-status" id="bookmarkStatus"></div>
+            <div class="modal-actions">
+                <button type="button" class="btn-cancel" onclick="closeBookmarkModal()">取消</button>
+                <button type="button" class="btn-submit" onclick="submitBookmark()">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 隐私政策弹窗 -->
+    <div id="privacyModal" class="modal" style="display: none;">
+        <div class="modal-content" style="max-width: 600px;">
+            <h3>🔒 隐私保护政策</h3>
+            <div style="padding: 20px 0; line-height: 1.8; color: #333; max-height: 70vh; overflow-y: auto;">
+                <p style="margin-bottom: 15px;">
+                    我们非常重视您的隐私安全。为了提供更好的服务体验和优化系统功能，我们的系统会收集以下信息：
+                </p>
+                
+                <p style="margin-bottom: 10px; font-weight: bold; color: #2c5aa0;">
+                    📊 我们收集的数据类型：
+                </p>
+                <ul style="margin-left: 20px; margin-bottom: 20px;">
+                    <li style="margin-bottom: 8px;"><strong>搜索记录</strong>：您搜索的主网站名称和关键词</li>
+                    <li style="margin-bottom: 8px;"><strong>点击记录</strong>：您访问的网站链接，包括：
+                        <ul style="margin-left: 20px; margin-top: 5px;">
+                            <li style="margin-bottom: 5px;">官方网站的访问记录（包括"我的关心"）</li>
+                            <li style="margin-bottom: 5px;">入口网站的访问记录</li>
+                            <li style="margin-bottom: 5px;">云收藏夹的访问记录</li>
+                        </ul>
+                    </li>
+                    <li style="margin-bottom: 8px;"><strong>访问时间</strong>：记录您进行搜索和点击操作的时间</li>
+                </ul>
+                
+                <p style="margin-bottom: 10px; font-weight: bold; color: #2c5aa0;">
+                    🎯 数据用途说明：
+                </p>
+                <ul style="margin-left: 20px; margin-bottom: 20px;">
+                    <li style="margin-bottom: 8px;"><strong>数据统计</strong>：用于分析用户行为，优化系统功能和用户体验</li>
+                    <li style="margin-bottom: 8px;"><strong>排行榜展示</strong>：根据访问热度生成网站热度推荐榜（仅统计官方网站和入口网站的访问，云收藏夹访问不计入排行榜）</li>
+                    <li style="margin-bottom: 8px;"><strong>系统优化</strong>：帮助改进搜索功能和网站推荐算法</li>
+                </ul>
+                
+                <p style="margin-bottom: 10px; font-weight: bold; color: #2c5aa0;">
+                    🛡️ 隐私保护承诺：
+                </p>
+                <ul style="margin-left: 20px; margin-bottom: 20px;">
+                    <li style="margin-bottom: 8px;">✅ 我们<strong>不会泄露</strong>您的账号信息和密码</li>
+                    <li style="margin-bottom: 8px;">✅ 我们<strong>不会泄露</strong>您的个人搜索历史给第三方</li>
+                    <li style="margin-bottom: 8px;">✅ 我们<strong>不会泄露</strong>您的个人网站访问历史给第三方</li>
+                    <li style="margin-bottom: 8px;">✅ 我们<strong>不会将</strong>收集的数据用于任何商业目的或出售给第三方</li>
+                    <li style="margin-bottom: 8px;">✅ 我们<strong>仅会</strong>在系统内部使用这些数据进行统计分析和功能优化</li>
+                    <li style="margin-bottom: 8px;">✅ 排行榜展示的是<strong>聚合统计数据</strong>，不会显示任何个人身份信息</li>
+                </ul>
+                
+                <p style="margin-top: 20px; padding: 15px; background: #f5f6fa; border-radius: 8px; color: #666; font-size: 14px; border-left: 4px solid #2c5aa0;">
+                    <strong>重要提示：</strong>我们收集的所有数据都经过严格的安全保护，仅用于提升服务质量。您的隐私安全始终是我们的首要考虑。如果您有任何疑问或需要删除您的数据，请联系系统管理员。
+                </p>
+            </div>
+            <div class="modal-actions">
+                <button type="button" class="btn-submit" onclick="closePrivacyModal()">我知道了</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript 文件 -->
+    <script src="index.js"></script>
+
+    <footer>
+        <p>&copy; 2025 SmartNexus - 智慧网络导航系统 | 徐子康团队版权所有</p>
+    </footer>
+</body>
+</html>
