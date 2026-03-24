@@ -2440,9 +2440,7 @@ function updatePageSelectorText() {
     if (!selectorText) return;
     
     const currentPath = window.location.pathname;
-    if (currentPath.includes('admin.html')) {
-        selectorText.textContent = '管理员后台';
-    } else if (currentPath.includes('statistics.html')) {
+    if (currentPath.includes('statistics.html')) {
         selectorText.textContent = '数据统计';
     } else {
         selectorText.textContent = '首页';
